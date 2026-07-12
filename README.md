@@ -1,7 +1,7 @@
 # Artha AI 🧭
 ### Your AI Co-Pilot for Wealth — built for IDBI Bank
 
-**🔗 Live Demo:** [idbi-hackathon-iota.vercel.app](https://idbi-hackathon-iota.vercel.app/)
+**🔗 Live Demo:** https://arthaverse.netlify.app/
 
 > *Artha* (अर्थ) — one of the four Purusharthas in Indian philosophy, meaning wealth, prosperity, and purpose. Artha AI is a conversational, avatar-led wealth advisor designed to sit inside IDBI Bank's mobile app and turn every customer's transaction, investment, and spending history into personalized, explainable financial guidance — available 24/7.
 
