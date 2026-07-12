@@ -1,0 +1,6 @@
+{
+  "name": "Artha AI",
+  "description": "Your AI Co-Pilot for Wealth featuring portfolio management, spending analysis, interactive risk profiling, goal planning, and real-time grounded AI chat.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
