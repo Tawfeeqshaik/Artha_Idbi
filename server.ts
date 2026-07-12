@@ -134,7 +134,7 @@ Rules of conduct:
 
     // Inject system instructions and run
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: formattedContents,
       config: {
         systemInstruction: groundingContext,
@@ -238,7 +238,7 @@ Return the result as a strictly validated JSON object containing:
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -299,7 +299,7 @@ Format the output as a beautiful, short markdown explanation under 150 words. Us
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
     res.json({ explanation: response.text });
@@ -360,7 +360,7 @@ Format the response as a valid JSON with the following structure:
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -520,7 +520,7 @@ Provide an educational and concise rationale explaining why this rebalancing imp
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
 
@@ -630,7 +630,7 @@ Return a JSON object matching this schema exactly:
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -707,7 +707,7 @@ Return a JSON object matching this schema exactly:
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -781,7 +781,7 @@ Return a JSON object:
   try {
     const ai = getGeminiClient();
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",

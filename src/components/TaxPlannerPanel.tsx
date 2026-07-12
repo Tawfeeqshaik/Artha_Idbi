@@ -187,7 +187,17 @@ export default function TaxPlannerPanel({
           <div className="rounded-xl bg-slate-950/30 p-4 border border-slate-800/60 space-y-3" id="tax-salary-config">
             <div className="flex justify-between items-center text-xs">
               <span className="text-slate-300 font-medium">Estimated Annual Income</span>
-              <span className="font-mono font-bold text-white">₹{annualSalary.toLocaleString("en-IN")}</span>
+              <div className="relative flex items-center max-w-[160px]" id="salary-input-container">
+                <span className="absolute left-2.5 text-slate-400 font-mono">₹</span>
+                <input
+                  type="number"
+                  value={annualSalary}
+                  onChange={(e) => setAnnualSalary(Math.max(0, Number(e.target.value)))}
+                  className="w-full rounded-lg border border-slate-800 bg-slate-950/50 pl-6 pr-2 py-1.5 text-xs text-white text-right font-mono font-bold focus:border-idbi-orange focus:outline-none"
+                  id="salary-manual-input"
+                  placeholder="Enter income"
+                />
+              </div>
             </div>
             <input
               type="range"

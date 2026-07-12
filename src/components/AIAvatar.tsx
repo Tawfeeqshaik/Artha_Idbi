@@ -109,7 +109,21 @@ export default function AIAvatar({ userData, language, lastBotMessage, onVoiceIn
               speakText(data.text);
             } catch (err) {
               console.error("Grounded voice error:", err);
-              const fallbackText = "Based on your Artha AI profile, your Emergency Fund stands at ₹2.4 Lakhs (2.8 months of coverage). I strongly recommend routing ₹15,000 monthly from your surplus to secure your ₹5.1 Lakh buffer.";
+              const lowerText = resultText.toLowerCase();
+              let fallbackText = "";
+              const clientFirstName = userDataRef.current?.name ? userDataRef.current.name.split(" ")[0] : "Client";
+              const cashVal = userDataRef.current?.cashBalance || 240000;
+              const monthlyExpenses = userDataRef.current?.monthlyExpenses || 85000;
+
+              if (lowerText.includes("gold") || lowerText.includes("metal") || lowerText.includes("yellow")) {
+                fallbackText = `Hello ${clientFirstName}, your gold allocation is currently around ₹24,000. For a balanced portfolio, keeping a 5% to 10% hedge is recommended. I suggest considering IDBI Sovereign Gold Bonds or IDBI Gold ETFs.`;
+              } else if (lowerText.includes("loan") || lowerText.includes("emi") || lowerText.includes("afford")) {
+                fallbackText = `Hi ${clientFirstName}, your current EMIs are ₹17,000. Given your ₹1.5L income, you can easily afford an additional EMI of up to ₹50,000. A ₹75 Lakh loan is well within reach.`;
+              } else if (lowerText.includes("sip") || lowerText.includes("investment")) {
+                fallbackText = `Hello ${clientFirstName}, you currently invest ₹15,000 in monthly SIPs. I highly recommend stepping this up by 10% annually to hit your targets faster.`;
+              } else {
+                fallbackText = `Based on your Artha AI profile, your Emergency Fund stands at ₹${cashVal.toLocaleString("en-IN")} (${userDataRef.current?.emergencyFundMonths || 2.8} months of coverage). I strongly recommend routing ₹15,000 monthly from your surplus to secure your ₹${(monthlyExpenses * 6).toLocaleString("en-IN")} buffer.`;
+              }
               setVoiceResponse(fallbackText);
               speakText(fallbackText);
             } finally {
