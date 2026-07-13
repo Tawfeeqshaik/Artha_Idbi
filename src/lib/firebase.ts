@@ -37,6 +37,24 @@ const isFirebaseConfigured = !!(
   firebaseConfig.authDomain
 );
 
+let firebaseEnabled = false; // Default to false (Without Firebase Basic Login) for complete stability
+try {
+  const saved = localStorage.getItem("idbi_firebase_enabled");
+  if (saved !== null) {
+    firebaseEnabled = saved === "true";
+  }
+} catch (e) {
+  firebaseEnabled = false;
+}
+
+export const getFirebaseEnabled = () => firebaseEnabled && isFirebaseConfigured;
+export const setFirebaseEnabled = (val: boolean) => {
+  firebaseEnabled = val;
+  try {
+    localStorage.setItem("idbi_firebase_enabled", String(val));
+  } catch (e) {}
+};
+
 let app: any;
 let auth: any;
 let db: any;
@@ -756,12 +774,14 @@ const triggerAuthChange = async () => {
 };
 
 export const dbService = {
+  isFirebaseEnabled: () => getFirebaseEnabled(),
+  setFirebaseEnabled: (val: boolean) => setFirebaseEnabled(val),
   // Authentication Emulator & Helper
   onAuthStateChanged: (callback: (user: any) => void) => {
     authListeners.push(callback);
 
     let unsubscribeFb: (() => void) | null = null;
-    if (isFirebaseConfigured && auth) {
+    if (getFirebaseEnabled() && auth) {
       unsubscribeFb = fbOnAuthStateChanged(auth, async (fbUser: FirebaseUser | null) => {
         if (fbUser) {
           // Fetch user details from Firestore or local fallback
@@ -859,7 +879,7 @@ export const dbService = {
 
   // Auth Operations
   signUp: async (email: string, pass: string, name: string) => {
-    if (isFirebaseConfigured && auth) {
+    if (getFirebaseEnabled() && auth) {
       try {
         const cred = await fbCreateUserWithEmail(auth, email, pass);
         // Create user profile in Firestore immediately
@@ -977,7 +997,7 @@ export const dbService = {
   },
 
   signIn: async (email: string, pass: string) => {
-    if (isFirebaseConfigured && auth) {
+    if (getFirebaseEnabled() && auth) {
       try {
         const cred = await fbSignInWithEmail(auth, email, pass);
         const profile = await dbService.getUserProfile(cred.user.uid);
@@ -1000,14 +1020,14 @@ export const dbService = {
   },
 
   googleLogin: async () => {
-    if (isFirebaseConfigured && auth) {
+    if (getFirebaseEnabled() && auth) {
       try {
         const provider = new GoogleAuthProvider();
         const res = await fbSignInPopup(auth, provider);
         const profile = await dbService.getUserProfile(res.user.uid);
         return { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName, profile };
       } catch (fbErr: any) {
-        console.error("Firebase Auth Cloud Google Login failed:", fbErr);
+        console.warn("Firebase Auth Cloud Google Login failed:", fbErr);
         let errorMsg = fbErr.message || String(fbErr);
         if (fbErr.code === "auth/unauthorized-domain") {
           errorMsg = "Unauthorized Domain: Please add your site's URL/domain (e.g. netlify.app, or your AI Studio preview domain) to the 'Authorized Domains' list in your Firebase Console (Authentication -> Settings -> Authorized Domains).";
@@ -1030,7 +1050,7 @@ export const dbService = {
   },
 
   resetPassword: async (email: string) => {
-    if (isFirebaseConfigured && auth) {
+    if (getFirebaseEnabled() && auth) {
       try {
         await fbResetPassword(auth, email);
       } catch (e) {
@@ -1042,7 +1062,7 @@ export const dbService = {
   },
 
   signOut: async () => {
-    if (isFirebaseConfigured && auth) {
+    if (getFirebaseEnabled() && auth) {
       try {
         await fbSignOut(auth);
       } catch (e) {
@@ -1065,7 +1085,7 @@ export const dbService = {
 
   getUserProfile: async (uid: string): Promise<UserProfile | null> => {
     let profile: UserProfile | null = null;
-    if (isFirebaseConfigured && db) {
+    if (getFirebaseEnabled() && db) {
       try {
         const d = await getDoc(doc(db, "users", uid));
         if (d.exists()) {
@@ -1107,7 +1127,7 @@ export const dbService = {
   },
 
   saveUserProfile: async (uid: string, profile: any) => {
-    if (isFirebaseConfigured && db) {
+    if (getFirebaseEnabled() && db) {
       try {
         await setDoc(doc(db, "users", uid), profile, { merge: true });
       } catch (err) {
@@ -1126,7 +1146,7 @@ export const dbService = {
   },
 
   getTransactions: async (uid: string): Promise<Transaction[]> => {
-    if (isFirebaseConfigured && db) {
+    if (getFirebaseEnabled() && db) {
       try {
         const q = query(collection(db, "transactions"), where("userId", "==", uid));
         const s = await getDocs(q);
@@ -1143,7 +1163,7 @@ export const dbService = {
   },
 
   saveTransaction: async (uid: string, tx: Transaction) => {
-    if (isFirebaseConfigured && db) {
+    if (getFirebaseEnabled() && db) {
       try {
         await addDoc(collection(db, "transactions"), { ...tx, userId: uid });
       } catch (err) {
@@ -1190,7 +1210,7 @@ export const dbService = {
   },
 
   getGoals: async (uid: string): Promise<FinancialGoal[]> => {
-    if (isFirebaseConfigured && db) {
+    if (getFirebaseEnabled() && db) {
       try {
         const q = query(collection(db, "goals"), where("userId", "==", uid));
         const s = await getDocs(q);
@@ -1207,7 +1227,7 @@ export const dbService = {
   },
 
   saveGoal: async (uid: string, goal: FinancialGoal) => {
-    if (isFirebaseConfigured && db) {
+    if (getFirebaseEnabled() && db) {
       try {
         await setDoc(doc(db, "goals", goal.id), { ...goal, userId: uid }, { merge: true });
       } catch (err) {
