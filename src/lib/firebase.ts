@@ -1007,11 +1007,22 @@ export const dbService = {
         const profile = await dbService.getUserProfile(res.user.uid);
         return { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName, profile };
       } catch (fbErr: any) {
-        console.warn("Firebase Auth Cloud Google Login failed, falling back to local simulation:", fbErr);
+        console.error("Firebase Auth Cloud Google Login failed:", fbErr);
+        let errorMsg = fbErr.message || String(fbErr);
+        if (fbErr.code === "auth/unauthorized-domain") {
+          errorMsg = "Unauthorized Domain: Please add your site's URL/domain (e.g. netlify.app, or your AI Studio preview domain) to the 'Authorized Domains' list in your Firebase Console (Authentication -> Settings -> Authorized Domains).";
+        } else if (fbErr.code === "auth/operation-not-allowed") {
+          errorMsg = "Google Sign-In is not enabled. Please enable 'Google' under the 'Sign-in method' tab in your Firebase Console (Authentication -> Sign-in method).";
+        } else if (fbErr.code === "auth/popup-blocked") {
+          errorMsg = "Popup Blocked: Your browser blocked the sign-in window. Please enable popups for this site, or open the app in a new tab to sign in.";
+        } else if (fbErr.code === "auth/cancelled-popup-request" || fbErr.code === "auth/popup-closed-by-user") {
+          errorMsg = "Google login popup was closed before completion.";
+        }
+        throw new Error(errorMsg);
       }
     }
-    // Popup simulate - log in as Priya Nair (User 2)
-    const matched = DEMO_USERS[1];
+    // Simulation fallback - log in as Rahul Sharma (Primary Demo Profile)
+    const matched = DEMO_USERS[0];
     localStorage.setItem("idbi_active_uid", matched.uid);
     const userObj = { uid: matched.uid, email: matched.email, displayName: matched.name, profile: matched };
     await triggerAuthChange();
